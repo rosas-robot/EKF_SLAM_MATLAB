@@ -12,13 +12,18 @@ n_landmarks = 15;
 [Robots, timesteps] = sampleMRCLAMdataSet(Robots, deltaT);
 
 % Write ground truth
-fileID = fopen('grnd_truth5.txt','w');
-fprintf(fileID, '%2.6f %2.6f %2.6f %2.6f\n', Robots{1, 1}.G');
+for i = 1:n_robots
+    gt_fname = ['robot' num2str(i) '/' 'grnd_truth' num2str(i) '.txt'];
+    fileID = fopen(gt_fname, 'w');
+    fprintf(fileID, '%2.6f %2.6f %2.6f %2.6f\n', Robots{1, i}.G');
 
-% Write odometry data
-fileID = fopen('robot_Odo5.txt','w');
-fprintf(fileID, '%2.6f %2.6f %2.6f\n', Robots{1, 1}.O');
+    % Write odometry data
+    odo_fname = ['robot' num2str(i) '/' 'robot_Odo' num2str(i) '.txt'];
+    fileID = fopen(odo_fname, 'w');
+    fprintf(fileID, '%2.6f %2.6f %2.6f\n', Robots{1, i}.O');
 
-% Write measurement data
-fileID = fopen('robot_Mesurement5.txt','w');
-fprintf(fileID, '%2.6f %d %2.6f %2.6f\n', Robots{1, 1}.M');
+    % Write measurement data
+    measurement_fname = ['robot' num2str(i) '/' 'robot_Mesurement' num2str(i) '.txt'];
+    fileID = fopen(measurement_fname, 'w');
+    fprintf(fileID, '%2.6f %d %2.6f %2.6f\n', Robots{1, i}.M');
+end
