@@ -57,7 +57,7 @@ codeDict = containers.Map(Barcodes(:,2),Barcodes(:,1));
 % loop through all odometry and measurement samples
 % updating the robot's pose estimate with each step
 % reference table 10.1 in Probabilistic Robotics
-for i = start:799%size(Robots{robot_num}.G, 1)
+for i = start:size(Robots{robot_num}.G, 1)
     
     % update time
     t = Robots{robot_num}.G(i, 1);
@@ -138,7 +138,7 @@ for i = start:799%size(Robots{robot_num}.G, 1)
             
             % if the landmark has never been seen before
             % add it to the state vector
-            if stateMeanBar(3 + j) == 0
+            if stateMeanBar(3*j+1) == 0
                 landmark_pos = [z(1,k) * cos(z(2,k) + stateMeanBar(3));
                                 z(1,k) * sin(z(2,k) + stateMeanBar(3));
                                 0];
@@ -153,29 +153,29 @@ for i = start:799%size(Robots{robot_num}.G, 1)
             q = delta' * delta;
             r = sqrt(q); % predicted range to landmark
             
-%             % predicted bearing to landmark
-%             pred_bear = conBear(atan2(delta(2), delta(1)) - stateMeanBar(3));
-%             
-%             zHat(:,k) = [r;
-%                          pred_bear;
-%                          j];
-%                      
-%             h_t = [-r*delta(1) -r*delta(2)  0   r*delta(1) r*delta(2) 0;
-%                    delta(2)    -delta(1)    -q  -delta(2)  delta(1)   0;
-%                    0           0            0   0          0          q];
-%                      
-%             F_1 = [eye(3,3); zeros(3,3)];
-%             F_2 = [zeros(3,3); eye(3,3)];
-%             F_xj = [F_1 zeros(6,3*j-3) F_2 zeros(6,3*n_landmarks - 3*j)];
-%             
-%             H_t = (1/q) * h_t * F_xj;
-%             
-%             % compute Kalman gain
-%             K = stateCovBar * H_t' * inv(H_t * stateCovBar * H_t' + Q_t);
-%             
-%             % incorporate new measurement into state mean and covariance
-%             stateMeanBar = stateMeanBar + K * (z(:,k) - zHat(:,k));
-%             stateCovBar = (eye(48) - (K * H_t)) * stateCovBar;
+            % predicted bearing to landmark
+            pred_bear = conBear(atan2(delta(2), delta(1)) - stateMeanBar(3));
+            
+            zHat(:,k) = [r;
+                         pred_bear;
+                         j];
+                     
+            h_t = [-r*delta(1) -r*delta(2)  0   r*delta(1) r*delta(2) 0;
+                   delta(2)    -delta(1)    -q  -delta(2)  delta(1)   0;
+                   0           0            0   0          0          q];
+                     
+            F_1 = [eye(3,3); zeros(3,3)];
+            F_2 = [zeros(3,3); eye(3,3)];
+            F_xj = [F_1 zeros(6,3*j-3) F_2 zeros(6,3*n_landmarks - 3*j)];
+            
+            H_t = (1/q) * h_t * F_xj;
+            
+            % compute Kalman gain
+            K = stateCovBar * H_t' * inv(H_t * stateCovBar * H_t' + Q_t);
+            
+            % incorporate new measurement into state mean and covariance
+            stateMeanBar = stateMeanBar + K * (z(:,k) - zHat(:,k));
+            stateCovBar = (eye(48) - (K * H_t)) * stateCovBar;
         end
     end
     
